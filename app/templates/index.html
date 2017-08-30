@@ -1,0 +1,75 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Flask Gmap{% endblock title %}
+
+{% block styles %}
+    {{super()}}
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        padding-top: 50px;
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      sidebar {
+          margin-top: 50px;
+          height: 100%;
+      }
+
+    </style>
+{% endblock styles %}
+
+{% block navbar %}
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <a class="navbar-brand" href="#">Flask Gmap</a>
+        </div>
+    </nav>
+{% endblock navbar %}
+
+{% block content %}
+    <sidebar class="col-xs-3 col-sm-3 col-md-3 col-lg-3 pre-scrollable">
+        <ul class="list-group">
+        {% for row in data %}
+            <li class="list-group-item"><a href="/path/{{row[1]}}/{{row[2]}}#{{row[1]}}{{row[2]}}" name="{{row[1]}}{{row[2]}}"><button type="button" class="btn btn-default">{{row}}</button></a></li>
+        {% endfor %}
+        </ul>
+    </sidebar>
+    <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9" id="map">
+    </div>
+{% endblock content %}
+
+{% block scripts %}
+    {{super()}}
+    <script>
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 14,
+          center: {lat: 21.0114754, lng: 105.743788},
+          mapTypeId: 'terrain'
+        });
+        var vehicleCoordinates = [{% for coord in coords %}
+            {lat: {{coord[0]}}, lng: {{coord[1]}} },
+        {% endfor %}];
+        var vehiclePath = new google.maps.Polyline({
+          path: vehicleCoordinates,
+          geodesic: true,
+          strokeColor: '#FF0000',
+          strokeOpacity: 1.0,
+          strokeWeight: 2
+        });
+        vehiclePath.setMap(map);
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCMV4lOWMtDcNX35it2F78Fthr0Ro1v-V0&callback=initMap">
+    </script>
+    <script>
+        $("a[name='{{vid}}{{depart_time}}'] button").addClass("btn-primary")
+    </script>
+{% endblock scripts %}
